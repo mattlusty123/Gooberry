@@ -17,11 +17,12 @@ function insertRows (cell, width, height, below) {
   var header = cell.offset(0,0,1,width);
   var footer = header.offset(height-1,0);
   var container = cell.offset(0,0,height,width);
-  var contents = cell.offset(1,0,5,6);
+  var contents = cell.offset(1,0,height-1,width);
   
   sheet.insertRows(cell.getRow(),height);
   container.clear().setDataValidation(null).setVerticalAlignment("top");
   contents.shiftRowGroupDepth(1);
+  //sheet.hideRow(footer);
   
   var area = sheet.getRange(row,1,height,100);
   area.clear().clearDataValidations();
@@ -34,7 +35,7 @@ function insertRows (cell, width, height, below) {
          };
 }
 
-function getTableDimension () {
+function getTableWidth () {
   
   var startCell = sheet.getRange(1,1);
   Search.dir = "right";
@@ -44,8 +45,11 @@ function getTableDimension () {
   Search.setStartCell(left).setTarget("right border");
   Search.build();
   var right = Search.run();
-  
-  flash(left);
-  flash(right);
-  
+  return right.getColumn() - left.getColumn() + 1;
+}
+
+function getRange (top, bottom){
+  var width = bottom.getColumn() - top.getColumn() + 1;
+  var height = bottom.getRow() - top.getRow() + 1;
+  return sheet.getRange(top.getRow(),top.getColumn(), height, width);
 }
