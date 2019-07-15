@@ -1,48 +1,71 @@
 var Search = {};
 
-// set defaults
+// set defaults // should never rely on these as could have been set already to something different
 Search.dir = "down"
 Search.mag = 10;
 Search.condition = "equal";
 
+/////////////////////////////////////
+// FUNCTION RUN
+/////////////////////////////////////
+
 Search.run = function () {
-  
+ 
   this.xy = [this.startCell.getRow(), this.startCell.getColumn()];
   
   for (var i = 0; i < this.groups; i++) {
+    
     var batch = this.getBatch(this.xy);
     
     var vals = this.getValues(batch);
-    vals = this.parseVals(vals);
+   
+    // changed
+    var vals = this.parseVals(vals);
     
     for(var j = 0; j < this.mag; j++){
-
+      
+      // changed
       if(this.isCondition(vals[j])){
+        
         return this.getCell((i*this.mag)+j);
+        
       }
     }  
     
     this.nextXY();
+    
   }
 
   if(this.remain > 0){
+    
     var batch = this.getRemain();
     
     var vals = this.getValues(batch);
+    
+    // added
     vals = this.parseVals(vals);
    
     for(var j = 0; j < this.remain; j++){
+      
       if(this.isCondition(vals[j])){
+        
         return this.getCell((this.groups*this.mag)+j);
+        
       }
     }
   }
-  alert("not found");
+
   return null;
+  
 }
+
+/////////////////////////////////////
+// SETTERS
+/////////////////////////////////////
 
 Search.setStartCell = function (startCell) {
   this.startCell = startCell;
+  this.sheet = startCell.getSheet();
   return this;
 }
 
@@ -56,80 +79,29 @@ Search.setDirection = function (dir) {
   return this;
 }
 
+// size of range fetched in each cycle
 Search.setMagnitude = function (mag) {
   this.mag = mag
   return this;
 }
 
+// conditions: equal, less, greater, date, boolean
 Search.setCondition = function (condition) {
   this.condition = condition;
   return this;
 }
 
+// types: value, font, background, date
 Search.setType = function (type) {
-  if(type == "value"){
-    this.getValues = function (batch){
-      return batch.getValues();
-    }
-  } else if (type == "background") {
-      this.getValues = function (batch){
-        return batch.getBackgrounds();
-    }
-  }
-  else if (type == "fontColor") {
-      this.getValues = function (batch){
-        return batch.getFontColors();
-    }  
-  } 
+  this.type = type;
   return this;
-}
-
-/////////////////////////////////////
-// added directional parseVals
-/////////////////////////////////////
-
-var parseDownVals = function (vals) {
-  var l = vals.length;
-  var newVals = [];
-  vals.forEach(function(item, i, arr){
-    newVals[i] = vals[i][0];
-  })
-  return newVals;
-}
-
-var parseLeftVals = function (vals) {
-  var l = vals[0].length;
-  var newVals = [];
-  vals[0].forEach(function(item, i, arr){
-    newVals[i] = vals[0][l-1-i];
-  })
-  return newVals;
-}
-
-var parseUpVals = function (vals) {
-  var l = vals.length;
-  var newVals = [];
-  vals.forEach(function(item, i, arr){
-    newVals[i] = vals[l-1-i][0];
-  })
-  return newVals;
-
-}
-
-var parseRightVals = function (vals) {
-  var l = vals[0].length;
-  var newVals = [];
-  vals[0].forEach(function(item, i, arr){
-    newVals[i] = vals[0][i];
-  })
-  return newVals;
 }
 
 /////////////////////////////////////
 // added isConditions 
 ///////////////////////////////////// 
 
-//these should be modified to take the "target" as second argument to be completely general for resubility
+//these should take the "target" as second argument to be completely general for resubility
 
 function isEqual (val) {
   if(typeof(val)!="boolean"){
@@ -149,7 +121,25 @@ function isLess (val) {
   }
 }
 
-// <function isDate> already exists in Date.js
+// function isDate already exists
+
+function isDateEqual (val) {
+  if(isDate(val)){
+    return val.valueOf() == this.target.valueOf();
+  }
+}
+
+function isDateGreater (val) {
+  if(isDate(val)){
+    return val.valueOf() > this.target.valueOf();
+  }
+}
+
+function isDateLess (val) {
+  if(isDate(val)){
+    return val.valueOf() < this.target.valueOf();
+  }
+}
 
 function isBoolean (val) {
   if(typeof(val)!="boolean"){
@@ -158,21 +148,28 @@ function isBoolean (val) {
 }
 
 /////////////////////////////////////
+// BUILD FUNCTION
+/////////////////////////////////////
 
 Search.build =  function () {
   
-/////////////////////////////////////
+  ///////////////////////////////////
+
+  // INITIALISE DIRECTIONS
+  
+  ///////////////////////////////////
 
   if(this.dir == "down"){
-  
+   
     this.parseVals = parseDownVals;
     
     this.startIndex = this.startCell.getRow();
-    this.lastIndex = sheet.getLastRow();
+    this.lastIndex = Search.sheet.getLastRow();
     this.range = this.lastIndex - this.startIndex + 1;
- 
+    
+    // new 
     this.getBatch = function (xy) {
-      return sheet.getRange(xy[0],xy[1],this.mag,1);
+      return Search.sheet.getRange(xy[0],xy[1],this.mag,1);
     }
     this.nextXY = function () {
       this.xy[0] = this.xy[0]+this.mag;
@@ -189,11 +186,12 @@ Search.build =  function () {
     this.parseVals = parseLeftVals;
     
     this.startIndex = this.startCell.getColumn();
-    this.lastIndex = sheet.getLastColumn();
+    this.lastIndex = Search.sheet.getLastColumn();
     this.range = this.startIndex;
     
+    // new
     this.getBatch = function (xy) {
-      return sheet.getRange(xy[0],xy[1]-this.mag+1,1,this.mag);
+      return Search.sheet.getRange(xy[0],xy[1]-this.mag+1,1,this.mag);
     }
     this.nextXY = function () {
       this.xy[1] = this.xy[1]-this.mag;
@@ -211,11 +209,12 @@ Search.build =  function () {
     this.parseVals = parseUpVals;
     
     this.startIndex = this.startCell.getRow();
-    this.lastIndex = sheet.getLastRow();
+    this.lastIndex = Search.sheet.getLastRow();
     this.range = this.startIndex ;
-
+    
+    // new
     this.getBatch = function (xy) {
-      return sheet.getRange(xy[0]-this.mag+1,xy[1],this.mag,1);
+      return Search.sheet.getRange(xy[0]-this.mag+1,xy[1],this.mag,1);
     }
     this.nextXY = function () {
       this.xy[0] = this.xy[0]-this.mag;
@@ -228,15 +227,16 @@ Search.build =  function () {
     }
     
   } else if (this.dir == "right") {
- 
+   
     this.parseVals = parseRightVals;
     
     this.startIndex = this.startCell.getColumn();
-    this.lastIndex = sheet.getLastColumn();
+    this.lastIndex = Search.sheet.getLastColumn();
     this.range = this.lastIndex - this.startIndex + 1;
- 
+    
+    // new
     this.getBatch = function (xy) {
-      return sheet.getRange(xy[0],xy[1],1,this.mag);
+      return Search.sheet.getRange(xy[0],xy[1],1,this.mag);
     }
     this.nextXY = function () {
       this.xy[1] = this.xy[1]+this.mag;
@@ -249,46 +249,93 @@ Search.build =  function () {
     }
   }
   
-  if(this.condition == "equal"){
+  ///////////////////////////////////
   
-      this.isCondition = isEqual;
+  // INITIALISE TYPE
+  
+  ///////////////////////////////////
+  
+  if(this.type == "value"){
+    this.getValues = function (batch){
+      return batch.getValues();
+    }
+  } else if (this.type == "background") {
+    this.getValues = function (batch){
+      return batch.getBackgrounds();
+    }
+  }
+  else if (this.type == "fontColor") {
+    this.getValues = function (batch){
+      return batch.getFontColors();
+    }  
+  } else if (this.type == "date") {
+    this.getValues = function (batch){
+      return batch.getValues();
+    }
+  }
+  
+  ///////////////////////////////////
+  
+  // INITIALISE CONDITION
+  
+  ///////////////////////////////////
+  
+  if(this.condition == "equal"){
+
+    if(this.type == 'date') {
+
+      this.isCondition = isDateEqual;
+      
+    } else {
     
-    } else if (this.condition == "greater") {
+    this.isCondition = isEqual;
       
+    }
+    
+  } else if (this.condition == "greater") {
+   
+    if(this.type == 'date') {
+    
+      this.isCondition = isDateGreater;
+      
+    } else {
+
       this.isCondition = isGreater;
-       
-    } else if (this.condition == "less") {
       
+    }
+    
+  } else if (this.condition == "less") {
+
+    if(this.type == 'date') {
+
+      this.isCondition = isDateLess;
+      
+    } else {
+
       this.isCondition = isLess;
       
-    } else if (this.condition == "date") {
- 
-      this.isCondition = isDate;
-      
-    } else if (this.condition == "boolean") {
-  
-      this.isCondition = isBoolean;
     }
+    
+  } else if (this.condition == "date") {
+ 
+    this.isCondition = isDate;
+    
+  } else if (this.condition == "boolean") {
+
+    this.isCondition = isBoolean;
+    
+  }
   
   this.groups = Math.floor(this.range/this.mag);
   this.remain = this.range - (this.mag*this.groups);
-
+  
   return this;
 }
 
 // NOTES
 
-// PROBLEM: lastRow() and lastColumn() works on cell values (not formatted cells)
+// PROBLEM: lastRow() and lastColumn() works on cell values (not formatted cells) - not suitable for a complete format based search
 // SOLUTION A: add a reasonable amount of cells on to catch over hanging table elements? 
 // SOLUTION B: find another method lastFormattedRow() and lastFOrmattedColumn()?
 // SOLUTION C: Figure out a method to find absolute intended last row or column - after the lastRow() or lastColumn() returned
 // IMPLEMENTED: Nothing atm!
-
-// PROBLEM: Comparing values can be misleading false = 0 and true = 1;
-// SOLUTION: Validate value as a number value? (but is also used for dates etc so dont break this capability)
-// SOLUTION: check if typeOf() != "boolean"
-
-// PROBLEM: Date values can be compared with [<] or [>] operators, but NOT with [==]!!! Infuriating!!! 
-// REASON: [==] operator compares Date Object - not values, however < and > still stands so compareDates() function still works!
-// SOLUTION: Will probably have to make another whole new condition function JUST for Dates now!
-// SOLUTION: I think just use get valueOf() for comparison (worked on Dates AND Numbers too becuase I think they are wrapped in a Number Object

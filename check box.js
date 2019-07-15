@@ -1,4 +1,4 @@
-function hasChecked (cell) {
+function isCheck (cell) {
   if(typeof(cell.getValue()) === "boolean"){
     if(cell.getWidth() == 1) {
       return true
@@ -6,34 +6,24 @@ function hasChecked (cell) {
   }
 }
 
-
-function checkbox (checkboxCell) {
-  
-  
-  //toggleGroup(checkboxCell);
-  /*
-  var searcher = Search.setStartCell(checkboxCell).setTarget(red).setType("background").setCondition("equal").setDirection("down");
-  var target = searcher.build().run();
-  if(target){
-    target.setValue("paul is awesooome");
-  
-  }
-  */
+function getCheckboxValidation () {
+  return spreadsheetApp.DataValidation().requireCheckbox().build();
 }
 
-function getButtonFunction (cell) {
-  var row = cell.getRow();
-  var col = cell.getColumn();
-  
-  var colId = spreadsheet.getRange(0,col);
-  
-  var functionIds = spreadsheet.getRange(row,0);
-  
-  if(colId == 0){
-    
+function toggleGroup(cell) {
+  // validation requirement (needs generalising)
+  if(cell.getColumn() == 2){
+    // ensure it is single cell range (prevents common bug wrongly identifying checkboxes)
+    if(cell.getWidth() == 1) {
+      var groupRow = cell.offset(1,0).getRow();
+      var groupDepth = sheet.getRowGroupDepth(groupRow);
+      var group = sheet.getRowGroup(groupRow,groupDepth);
+      if(cell.getValue() == true){
+        group.expand();
+      } else {
+        group.collapse();
+      }
+    }
   }
-  
-  
 }
-
 

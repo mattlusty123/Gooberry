@@ -1,6 +1,7 @@
 var weekDays = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
 var weekDaysShort = ["sun","mon","tue","wed","thu","fri","sat"];
 var WeekDaysShort = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+var months = ["January","February","March","April","May","June","July","August","September","October","November","December"]
 
 function isDate (d) {
     return Object.prototype.toString.call(d)=="[object Date]";
@@ -21,11 +22,11 @@ function getNormDate (date) {
 function compareDates (date1, date2) {
   if(isDate(date1) && isDate(date1)){
     if(date1 < date2){
-      return 0;
+      return "less";
     } else if (date1 > date2) {
-      return 2;
+      return "greater";
     } else {
-      return 1;
+      return "equal";
     }
   } else {
     return null; 
