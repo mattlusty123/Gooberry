@@ -164,21 +164,34 @@ Search.build =  function () {
     this.parseVals = parseDownVals;
     
     this.startIndex = this.startCell.getRow();
+    
     this.lastIndex = Search.sheet.getLastRow();
+    
     this.range = this.lastIndex - this.startIndex + 1;
     
     // new 
     this.getBatch = function (xy) {
+      
       return Search.sheet.getRange(xy[0],xy[1],this.mag,1);
+      
     }
+    
     this.nextXY = function () {
+      
       this.xy[0] = this.xy[0]+this.mag;
+      
     }
+    
     this.getCell = function (i) {
+      
       return this.startCell.offset(i,0);
+      
     }
+    
     this.getRemain = function () {
+      
       return this.startCell.offset(this.groups*this.mag,0,this.remain,1);  
+      
     }
     
   } else if (this.dir == "left") {
@@ -186,22 +199,36 @@ Search.build =  function () {
     this.parseVals = parseLeftVals;
     
     this.startIndex = this.startCell.getColumn();
+    
     this.lastIndex = Search.sheet.getLastColumn();
+    
     this.range = this.startIndex;
     
     // new
     this.getBatch = function (xy) {
+      
       return Search.sheet.getRange(xy[0],xy[1]-this.mag+1,1,this.mag);
+      
     }
+    
     this.nextXY = function () {
+      
       this.xy[1] = this.xy[1]-this.mag;
+      
     }
+    
     this.getCell = function (i) {
+      
       return this.startCell.offset(0,-i);
+      
     }
+    
     this.getRemain = function () {
+      
       var n = -(this.groups*this.mag+this.remain-1);
+      
       return this.startCell.offset(0,-(this.groups*this.mag+this.remain-1),1,this.remain);  
+      
     }
     
   } else if (this.dir == "up") {
@@ -209,21 +236,34 @@ Search.build =  function () {
     this.parseVals = parseUpVals;
     
     this.startIndex = this.startCell.getRow();
+    
     this.lastIndex = Search.sheet.getLastRow();
+    
     this.range = this.startIndex ;
     
     // new
+    
     this.getBatch = function (xy) {
+      
       return Search.sheet.getRange(xy[0]-this.mag+1,xy[1],this.mag,1);
+      
     }
+    
     this.nextXY = function () {
+      
       this.xy[0] = this.xy[0]-this.mag;
+      
     }
     this.getCell = function (i) {
+      
       return this.startCell.offset(-i,0);
+      
     }
+    
     this.getRemain = function () {
+      
       return this.startCell.offset(-(this.groups*this.mag+this.remain-1),0,this.remain,1);  
+      
     }
     
   } else if (this.dir == "right") {
@@ -231,53 +271,75 @@ Search.build =  function () {
     this.parseVals = parseRightVals;
     
     this.startIndex = this.startCell.getColumn();
+    
     this.lastIndex = Search.sheet.getLastColumn();
+    
     this.range = this.lastIndex - this.startIndex + 1;
     
     // new
+    
     this.getBatch = function (xy) {
+      
       return Search.sheet.getRange(xy[0],xy[1],1,this.mag);
     }
     this.nextXY = function () {
+      
       this.xy[1] = this.xy[1]+this.mag;
+      
     }
+    
     this.getCell = function (i) {
+      
       return this.startCell.offset(0,i);
+      
     }
+    
     this.getRemain = function () {
+      
       return this.startCell.offset(0,(this.groups*this.mag),1,this.remain);  
+      
     }
   }
   
   ///////////////////////////////////
-  
   // INITIALISE TYPE
-  
   ///////////////////////////////////
   
   if(this.type == "value"){
+    
     this.getValues = function (batch){
+      
       return batch.getValues();
+      
     }
+    
   } else if (this.type == "background") {
+    
     this.getValues = function (batch){
+      
       return batch.getBackgrounds();
+      
     }
   }
+  
   else if (this.type == "fontColor") {
+    
     this.getValues = function (batch){
+      
       return batch.getFontColors();
+      
     }  
   } else if (this.type == "date") {
+    
     this.getValues = function (batch){
+      
       return batch.getValues();
+      
     }
   }
   
   ///////////////////////////////////
-  
   // INITIALISE CONDITION
-  
   ///////////////////////////////////
   
   if(this.condition == "equal"){
@@ -327,6 +389,7 @@ Search.build =  function () {
   }
   
   this.groups = Math.floor(this.range/this.mag);
+  
   this.remain = this.range - (this.mag*this.groups);
   
   return this;

@@ -1,43 +1,51 @@
-// currently uses sheet named "snippets"
-
-function getSnippet(snippet) {
-  var snippets = spreadsheet.getSheetByName("snippets");
-  var startCell = snippets.getRange(1,2);
-
-  Search.setTarget(snippet).setCondition("equal").setType("value").setStartCell(startCell).build();
+function getSnippet (snippetName) {
   
-  var target = Search.run();
-  var startSnip = target.offset(2,0);
+  var start, snipSheet, snip, tag;
 
-  var target = Search.setStartCell(startSnip).build().run();
+  start = {}; snip = {}; snip.start = {}; snip.end = {}; tag = {};
   
-  var endSnip = target.offset(-2,0);
+  // currently uses sheet named "snippets" - needs generalising
+  
+  snipSheet = spreadsheet.getSheetByName("snippets");
+  
+  start.cell = snipSheet.getRange(1,2);
 
-  var range = getRangeOfRows(startSnip,endSnip,"snippets");
+  Search.setTarget(snippetName).setCondition("equal").setType("value").setStartCell(start.cell).setDirection("down").build();
   
-  return range;
+  tag.cell = Search.run();
+  
+  snip.start.cell = tag.cell.offset(2,0);
+
+  Search.setStartCell(snip.start.cell).build();
+  
+  tag.cell = Search.run();
+  
+  snip.end.cell = tag.cell.offset(-2,0);
+  
+  snip.range = getRangeOfRows(snip.start.cell.getRow(),snip.end.cell.getRow(),"snippets");
+
+  return snip.range;
+  
 }
 
-// better group handling function added // SEE Exercises 
-
-function addSnippet(snippetName,cell){
-  // get source
-  var snippet = getSnippet(snippetName);
+function addSnippet (snippetName, cell){
   
+  var snippet = getSnippet(snippetName);
+
   var height = getRangeHeight(snippet);
+
   var row = cell.getRow();
+  
   var to = sheet.getRange(row,1);
   
   var insertblock = insertRows(cell,getTableWidth(),height);
+  
   insertblock.container.setBackground(lightGrey3);
-  
-  var groupDepths = getGroupDepths(snippet);
-  var rangeAndGroups = {range:snippet,groupDepths:groupDepths};
-  
-  // copy to space
-  copyRangeAndGroups(rangeAndGroups,to);
+ 
+  snippet.copyTo(to);
   
   insertblock.height = height;
+  
   return insertblock;
+  
 }
-

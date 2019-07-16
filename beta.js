@@ -1,3 +1,117 @@
+////////////////////////////////////////////////
+// Experimental patterns for groups
+////////////////////////////////////////////////
+
+function doGroups() {
+  
+  var ranges = {};
+
+  ranges[1] = [112];
+  ranges[2] = [[15,15,15,15,15,15,15]];
+  ranges[3] = [[[4,9],[4,9],[4,9],[4,9],[4,9],[4,9],[4,9]]];
+  ranges[4] = [[[4,[5,2]],[4,[5,2]],[4,[5,2]],[4,[5,2]],[4,[5,2]],[4,[5,2]],[4,[5,2]]]];
+  
+  // ------------------
+  
+  // range2 [15]
+  // range3 [4]
+  // range3 [9]
+  // range4 [5];
+  // range4 [2];
+  
+  // A // AA // 15 -------------- [4,9]
+  // A // AA // AAA // 4 FALSE
+  // A // AA // AAA // 9 -------- [5,2]
+  // A // AA // AAA // AAAA // 5  
+  // A // AA // AAA // AAAA // 2 
+  
+  // range2 [15]
+  // range3 [4]
+  // range3 [9]
+  // range4 [5];
+  // range4 [2];
+  
+  // A // AA // 15
+  // A // AA // AAA // 4 FALSE 
+  // A // AA // AAA // 9  
+  // A // AA // AAA // AAAA // 5  
+  // A // AA // AAA // AAAA // 2 
+
+  // range2 [15]
+  // range3 [4]
+  // range3 [9]
+  // range4 [5];
+  // range4 [2];
+  
+  // A // AA // 15
+  // A // AA // AAA // 4 FALSE 
+  // A // AA // AAA // 9  
+  // A // AA // AAA // AAAA // 5  
+  // A // AA // AAA // AAAA // 2   
+
+  // range2 [15]
+  // range3 [4]
+  // range3 [9]
+  // range4 [5];
+  // range4 [2];
+  
+  // A // AA // 15
+  // A // AA // AAA // 4 FALSE 
+  // A // AA // AAA // 9  
+  // A // AA // AAA // AAAA // 5  
+  // A // AA // AAA // AAAA // 2 
+
+  // range2 [15]
+  // range3 [4]
+  // range3 [9]
+  // range4 [5];
+  // range4 [2];
+  
+  // A // AA // 15
+  // A // AA // AAA // 4 FALSE 
+  // A // AA // AAA // 9  
+  // A // AA // AAA // AAAA // 5  
+  // A // AA // AAA // AAAA // 2 
+
+  // range2 [15]
+  // range3 [4]
+  // range3 [9]
+  // range4 [5];
+  // range4 [2];
+  
+  // A // AA // 15
+  // A // AA // AAA // 4 FALSE 
+  // A // AA // AAA // 9  
+  // A // AA // AAA // AAAA // 5  
+  // A // AA // AAA // AAAA // 2 
+ 
+  // range2 [15]
+  // range3 [4]
+  // range3 [9]
+  // range4 [5];
+  // range4 [2];
+  
+  // A // AA // 15
+  // A // AA // AAA // 4 FALSE 
+  // A // AA // AAA // 9  
+  // A // AA // AAA // AAAA // 5  
+  // A // AA // AAA // AAAA // 2 
+  
+  var range1Height = [10,5];
+  var exist1 = [true,true]; // validation for this needs to be added
+  
+  var range2Height = [[4,4],[4]];
+  var exist2 = [[false,true],[true]];
+  
+  var range3Height = [[[1,2],[1,1]],[[1,1]]];
+  var exist3 = [[[true,true],[true,true]],[[true,true]]]; 
+  
+  var range4Height; 
+  var exist4;
+  
+  
+}
+
 function reLevel () {
   // search down rows for colors used
   
